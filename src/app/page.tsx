@@ -154,21 +154,30 @@ Nharuvi Global Private Limited is a forward-thinking accounting and consulting f
         </div>
       </section>
 
-      {/* Contact */}
-      <section className="py-20 px-6 max-w-4xl mx-auto" id="contact">
-        <h2 className="text-3xl font-semibold mb-6 text-center">Get in Touch</h2>
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Input placeholder="Name" required />
-          <Input placeholder="Email" required type="email" />
-          <Input placeholder="Phone" required />
-          <textarea rows={4} placeholder="Your message" className="md:col-span-2 p-4 border rounded-xl" />
-          <div className="md:col-span-2 flex items-center">
-            <input type="checkbox" required className="mr-2" />
-            <label className="text-sm text-gray-600">I agree to the terms and allow my data to be used for contact.</label>
-          </div>
-          <Button className="md:col-span-2 w-full py-3 text-lg">Submit</Button>
-        </form>
-      </section>
+{/* Contact CTA */}
+<section className="py-20 px-6 max-w-4xl mx-auto text-center" id="contact">
+  <h2 className="text-3xl font-semibold mb-4">
+    Ready to talk or work with us?
+  </h2>
+  <p className="text-gray-600 mb-8">
+    Whether you have a quick question or are ready to onboard, choose how you'd like to proceed.
+  </p>
+
+  <div className="flex flex-col sm:flex-row justify-center gap-4">
+    <Link href="/contact">
+      <Button variant="outline" className="px-8 py-3 text-lg">
+        Contact Us
+      </Button>
+    </Link>
+
+    <Link href="/intake">
+      <Button className="px-8 py-3 text-lg">
+        Client Intake
+      </Button>
+    </Link>
+  </div>
+</section>
+
 
       {/* Footer */}
       <footer className="bg-gray-100 py-10 px-6 text-sm text-gray-600">
