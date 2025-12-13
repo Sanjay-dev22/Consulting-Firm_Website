@@ -7,8 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin } from "lucide-react";
 
+type ContactFormState = {
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+  consent: boolean;
+};
+
 export default function ContactPage() {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<ContactFormState>({
     name: "",
     email: "",
     phone: "",
@@ -23,10 +31,14 @@ export default function ContactPage() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value, type } = e.target as HTMLInputElement;
+    const { name, type, value } = e.target as HTMLInputElement;
+
     setForm((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+      [name]:
+        type === "checkbox"
+          ? (e.target as HTMLInputElement).checked
+          : value,
     }));
   };
 
@@ -44,7 +56,7 @@ export default function ContactPage() {
         body: JSON.stringify(form),
       });
 
-      const data = await res.json();
+      const data: { error?: string } = await res.json();
 
       if (!res.ok) {
         throw new Error(data.error || "Submission failed");
@@ -58,8 +70,12 @@ export default function ContactPage() {
         message: "",
         consent: false,
       });
-    } catch (err: any) {
-      setError(err.message || "Something went wrong. Please try again.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -67,8 +83,8 @@ export default function ContactPage() {
 
   return (
     <main className="max-w-4xl mx-auto py-16 px-6">
-      {/* Header */}
       <h1 className="text-4xl font-bold mb-6 text-gray-900">Contact Us</h1>
+
       <p className="text-gray-600 mb-10">
         We&rsquo;d love to hear from you. Whether you have a question about our
         services or want to explore how we can help your business, our team is
@@ -78,10 +94,10 @@ export default function ContactPage() {
       <div className="grid md:grid-cols-2 gap-10">
         {/* Contact Info */}
         <div className="space-y-6">
-          <div className="flex items-start gap-4">
+          <div className="flex gap-4">
             <Mail className="text-green-600 w-6 h-6" />
             <div>
-              <p className="font-semibold text-gray-800">Email</p>
+              <p className="font-semibold">Email</p>
               <a
                 href="mailto:nharuviglobal@gmail.com"
                 className="text-green-700 hover:underline"
@@ -91,121 +107,67 @@ export default function ContactPage() {
             </div>
           </div>
 
-          <div className="flex items-start gap-4">
+          <div className="flex gap-4">
             <Phone className="text-green-600 w-6 h-6" />
             <div>
-              <p className="font-semibold text-gray-800">Phone</p>
+              <p className="font-semibold">Phone</p>
               <p>+91 80569 95508</p>
             </div>
           </div>
 
-          <div className="flex items-start gap-4">
+          <div className="flex gap-4">
             <MapPin className="text-green-600 w-6 h-6" />
             <div>
-              <p className="font-semibold text-gray-800">Office Location</p>
+              <p className="font-semibold">Office Location</p>
               <p>Bengaluru, Karnataka, India</p>
             </div>
           </div>
         </div>
 
-        {/* Contact Form */}
-        <div>
-          {!success ? (
-            <form
-              onSubmit={handleSubmit}
-              className="space-y-4"
-              aria-disabled={loading}
-            >
-              <Input
-                name="name"
-                placeholder="Your Name"
-                required
-                autoFocus
-                value={form.name}
-                onChange={handleChange}
-              />
+        {/* Form */}
+        {!success ? (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input name="name" placeholder="Your Name" required value={form.name} onChange={handleChange} />
+            <Input name="email" type="email" placeholder="Email Address" required value={form.email} onChange={handleChange} />
+            <Input name="phone" placeholder="Phone Number" required value={form.phone} onChange={handleChange} />
 
-              <Input
-                name="email"
-                type="email"
-                placeholder="Email Address"
-                required
-                value={form.email}
-                onChange={handleChange}
-              />
+            <textarea
+              name="message"
+              rows={4}
+              className="w-full p-3 border rounded-md"
+              placeholder="Your Message"
+              value={form.message}
+              onChange={handleChange}
+            />
 
-              <Input
-                name="phone"
-                placeholder="Phone Number"
-                required
-                value={form.phone}
-                onChange={handleChange}
-              />
+            <label className="flex gap-2 text-sm">
+              <input type="checkbox" name="consent" required checked={form.consent} onChange={handleChange} />
+              I allow this website to store my submission.
+            </label>
 
-              <textarea
-                name="message"
-                rows={4}
-                className="w-full p-3 border rounded-md"
-                placeholder="Your Message"
-                value={form.message}
-                onChange={handleChange}
-              />
+            {error && <p className="text-red-600 text-sm">{error}</p>}
 
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <input
-                  type="checkbox"
-                  name="consent"
-                  required
-                  checked={form.consent}
-                  onChange={handleChange}
-                />
-                <label>
-                  I allow this website to store my submission so they can respond
-                  to my inquiry.
-                </label>
-              </div>
+            <Button disabled={loading} className="w-full text-lg">
+              {loading ? "Submitting…" : "Send Message"}
+            </Button>
+          </form>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-green-50 border border-green-200 rounded-lg p-6"
+          >
+            <p className="text-green-700 font-semibold">
+              ✅ Message sent successfully
+            </p>
 
-              {error && (
-                <p className="text-red-600 text-sm">{error}</p>
-              )}
-
-              <Button
-                className="w-full text-lg disabled:opacity-70 disabled:cursor-not-allowed"
-                disabled={loading}
-              >
-                {loading ? "Submitting…" : "Send Message"}
+            <Link href="/intake">
+              <Button size="sm" className="mt-4">
+                Proceed to Client Intake
               </Button>
-
-              <p className="text-xs text-gray-500 text-center mt-2">
-                We typically respond within 1 business day.
-              </p>
-            </form>
-          ) : (
-            /* Success + Post-submit CTA */
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="bg-green-50 border border-green-200 rounded-lg p-6 space-y-4"
-            >
-              <p className="text-green-700 font-semibold">
-                ✅ Thank you! Your message has been sent successfully.
-              </p>
-
-              <p className="text-sm text-gray-600">
-                If you&rsquo;re ready to move forward or would like us to
-                understand your requirements in more detail, you can proceed to
-                our Client Intake Form.
-              </p>
-
-              <Link href="/intake">
-                <Button size="sm">
-                  Proceed to Client Intake
-                </Button>
-              </Link>
-            </motion.div>
-          )}
-        </div>
+            </Link>
+          </motion.div>
+        )}
       </div>
     </main>
   );

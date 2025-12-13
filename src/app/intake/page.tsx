@@ -62,9 +62,12 @@ export default function IntakeFormPage() {
         comments: "",
         consent: false,
       });
-    } catch (err: any) {
-      setError(err.message || "Something went wrong");
-    } finally {
+   } catch (err) {
+  const message =
+    err instanceof Error ? err.message : "Something went wrong";
+  setError(message);
+}
+ finally {
       setLoading(false);
     }
   };

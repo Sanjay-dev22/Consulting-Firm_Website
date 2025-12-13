@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
+type ContactPayload = {
+  name: string;
+  email: string;
+  phone: string;
+  message?: string;
+  consent: boolean;
+};
+
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-
+    const body = (await req.json()) as ContactPayload;
     const { name, email, phone, message, consent } = body;
 
     if (!name || !email || !phone || !consent) {
@@ -16,15 +23,7 @@ export async function POST(req: Request) {
 
     const { error } = await supabase
       .from("contact_submissions")
-      .insert([
-        {
-          name,
-          email,
-          phone,
-          message,
-          consent,
-        },
-      ]);
+      .insert([{ name, email, phone, message, consent }]);
 
     if (error) {
       console.error(error);
@@ -35,7 +34,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { error: "Invalid request" },
       { status: 500 }

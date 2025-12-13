@@ -1,7 +1,6 @@
 "use client";
   
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Globe, Linkedin, Mail } from "lucide-react";
 import Image from "next/image"; // ✅ at the top
@@ -160,7 +159,7 @@ Nharuvi Global Private Limited is a forward-thinking accounting and consulting f
     Ready to talk or work with us?
   </h2>
   <p className="text-gray-600 mb-8">
-    Whether you have a quick question or are ready to onboard, choose how you'd like to proceed.
+    Whether you have a quick question or are ready to onboard, choose how you&apos;d like to proceed.
   </p>
 
   <div className="flex flex-col sm:flex-row justify-center gap-4">
