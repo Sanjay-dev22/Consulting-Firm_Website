@@ -7,16 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin } from "lucide-react";
 
-type ContactFormState = {
-  name: string;
-  email: string;
-  phone: string;
-  message: string;
-  consent: boolean;
-};
+const MAPS_URL = "https://maps.app.goo.gl/rKV9oXWU2cB2m1Yv8";
 
 export default function ContactPage() {
-  const [form, setForm] = useState<ContactFormState>({
+  const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
@@ -32,7 +26,6 @@ export default function ContactPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, type, value } = e.target as HTMLInputElement;
-
     setForm((prev) => ({
       ...prev,
       [name]:
@@ -57,25 +50,15 @@ export default function ContactPage() {
       });
 
       const data: { error?: string } = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Submission failed");
-      }
+      if (!res.ok) throw new Error(data.error || "Submission failed");
 
       setSuccess(true);
-      setForm({
-        name: "",
-        email: "",
-        phone: "",
-        message: "",
-        consent: false,
-      });
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Something went wrong. Please try again.");
-      }
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -83,43 +66,39 @@ export default function ContactPage() {
 
   return (
     <main className="max-w-4xl mx-auto py-16 px-6">
-      <h1 className="text-4xl font-bold mb-6 text-gray-900">Contact Us</h1>
-
-      <p className="text-gray-600 mb-10">
-        We&rsquo;d love to hear from you. Whether you have a question about our
-        services or want to explore how we can help your business, our team is
-        ready to assist.
-      </p>
+      <h1 className="text-4xl font-bold mb-6">Contact Us</h1>
 
       <div className="grid md:grid-cols-2 gap-10">
         {/* Contact Info */}
         <div className="space-y-6">
           <div className="flex gap-4">
-            <Mail className="text-green-600 w-6 h-6" />
+            <Mail className="w-6 h-6 text-green-600" />
+            <a href="mailto:nharuviglobal@gmail.com" className="hover:underline">
+              nharuviglobal@gmail.com
+            </a>
+          </div>
+
+          <div className="flex gap-4">
+            <Phone className="w-6 h-6 text-green-600" />
+            <p>+91 80569 95508</p>
+          </div>
+
+          <div className="flex gap-4">
+            <MapPin className="w-6 h-6 text-green-600" />
             <div>
-              <p className="font-semibold">Email</p>
+              <p className="font-semibold mb-1">Office Location</p>
               <a
-                href="mailto:nharuviglobal@gmail.com"
-                className="text-green-700 hover:underline"
+                href={MAPS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
               >
-                nharuviglobal@gmail.com
+                Door No. 9, 2nd Floor,<br />
+                Hi Tech Building, No. 624 & 624/2,<br />
+                B Channasandra, OMBR Layout,<br />
+                Kasturi Nagar, Bengaluru,<br />
+                Karnataka – 560033, India
               </a>
-            </div>
-          </div>
-
-          <div className="flex gap-4">
-            <Phone className="text-green-600 w-6 h-6" />
-            <div>
-              <p className="font-semibold">Phone</p>
-              <p>+91 80569 95508</p>
-            </div>
-          </div>
-
-          <div className="flex gap-4">
-            <MapPin className="text-green-600 w-6 h-6" />
-            <div>
-              <p className="font-semibold">Office Location</p>
-              <p>Bengaluru, Karnataka, India</p>
             </div>
           </div>
         </div>
@@ -127,21 +106,20 @@ export default function ContactPage() {
         {/* Form */}
         {!success ? (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <Input name="name" placeholder="Your Name" required value={form.name} onChange={handleChange} />
-            <Input name="email" type="email" placeholder="Email Address" required value={form.email} onChange={handleChange} />
-            <Input name="phone" placeholder="Phone Number" required value={form.phone} onChange={handleChange} />
+            <Input name="name" placeholder="Your Name" required onChange={handleChange} />
+            <Input name="email" type="email" placeholder="Email Address" required onChange={handleChange} />
+            <Input name="phone" placeholder="Phone Number" required onChange={handleChange} />
 
             <textarea
               name="message"
               rows={4}
               className="w-full p-3 border rounded-md"
               placeholder="Your Message"
-              value={form.message}
               onChange={handleChange}
             />
 
             <label className="flex gap-2 text-sm">
-              <input type="checkbox" name="consent" required checked={form.consent} onChange={handleChange} />
+              <input type="checkbox" name="consent" required onChange={handleChange} />
               I allow this website to store my submission.
             </label>
 
@@ -150,21 +128,29 @@ export default function ContactPage() {
             <Button disabled={loading} className="w-full text-lg">
               {loading ? "Submitting…" : "Send Message"}
             </Button>
+
+            <p className="text-xs text-gray-500 text-center">
+              We typically respond within 1 business day.
+            </p>
           </form>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-green-50 border border-green-200 rounded-lg p-6"
+            className="bg-green-50 border border-green-200 rounded-lg p-6 space-y-4"
           >
             <p className="text-green-700 font-semibold">
-              ✅ Message sent successfully
+              ✅ Thank you! Your message has been sent successfully.
+            </p>
+
+            <p className="text-sm text-gray-600">
+              If you’re ready to move forward or would like us to understand your
+              requirements in more detail, you can proceed to our Client Intake
+              Form.
             </p>
 
             <Link href="/intake">
-              <Button size="sm" className="mt-4">
-                Proceed to Client Intake
-              </Button>
+              <Button size="sm">Proceed to Client Intake</Button>
             </Link>
           </motion.div>
         )}
