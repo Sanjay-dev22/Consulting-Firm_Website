@@ -25,8 +25,8 @@ export default function Navbar() {
           <Image
             src="/logo-navbar.png"
             alt="Nharuvi Global"
-            width={290}
-            height={44}
+            width={305}
+            height={48}
             priority
             className="object-contain translate-y-[1px]"
           />
