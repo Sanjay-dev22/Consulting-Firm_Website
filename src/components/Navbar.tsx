@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu } from 'lucide-react';
 
@@ -16,10 +17,24 @@ export default function Navbar() {
 
   return (
     <header className="bg-[#121926] text-white sticky top-0 z-50 shadow">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="text-xl font-bold tracking-wide">
-          Nharuvi Global
+      {/* 
+        Use fixed height instead of py-* 
+        This prevents the “bloated navbar” issue permanently
+      */}
+      <div className="max-w-8xl mx-auto px-6 h-17 flex items-center justify-between">
+
+        {/* LOGO — top-left, anchored, professional */}
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/logo-navbar.png"
+            alt="Nharuvi Global"
+            width={290}
+            height={44}
+            priority
+            className="object-contain translate-y-[1px]"
+          />
+          {/* Accessibility + SEO fallback */}
+          <span className="sr-only">Nharuvi Global</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -53,7 +68,9 @@ export default function Navbar() {
           <Link
             href="/contact"
             className={`ml-4 px-4 py-2 rounded-full border border-green-400 text-green-400 hover:bg-green-400 hover:text-black font-semibold transition ${
-              pathname === '/contact' ? 'bg-green-400 text-black' : ''
+              pathname === '/contact'
+                ? 'bg-green-400 text-black'
+                : ''
             }`}
           >
             Contact
@@ -69,7 +86,7 @@ export default function Navbar() {
         </nav>
 
         {/* Mobile Menu Icon (future enhancement) */}
-        <button className="md:hidden">
+        <button className="md:hidden" aria-label="Open menu">
           <Menu size={24} />
         </button>
       </div>

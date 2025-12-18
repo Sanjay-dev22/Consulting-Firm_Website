@@ -57,14 +57,14 @@ export default function LandingPage() {
             </Button>
           </Link>
 
-          <Link href="/contact">
-            <Button
-              variant="outline"
-              className="px-8 py-3 text-lg border-white text-white hover:bg-white hover:text-black"
-            >
-              Speak to an Expert
-            </Button>
-          </Link>
+       <Link href="/contact">
+  <Button
+    className="px-8 py-3 text-lg bg-white/15 text-white border border-white/40 hover:bg-white hover:text-black transition"
+  >
+    Speak to an Expert
+  </Button>
+</Link>
+
         </div>
 
         <div className="mt-14 border-t border-white/30 pt-6 text-sm text-gray-200">
