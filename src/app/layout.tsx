@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nharuvi Global - Accounting Reinvented",
+  title: "Nharuvi Global",
   description: "Smart, reliable, and tech-driven accounting & compliance solutions.",
 };
 
