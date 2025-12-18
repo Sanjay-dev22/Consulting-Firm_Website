@@ -18,7 +18,7 @@ export default function Navbar() {
   return (
     <header className="bg-[#121926] text-white sticky top-0 z-50 shadow">
       {/* Fixed height, predictable, enterprise-safe */}
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="max-w-8xl mx-auto px-6 h-17 flex items-center justify-between">
 
         {/* LOGO — top-left, anchored, world-class */}
         <Link href="/" className="flex items-center">
