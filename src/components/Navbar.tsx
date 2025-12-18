@@ -17,23 +17,19 @@ export default function Navbar() {
 
   return (
     <header className="bg-[#121926] text-white sticky top-0 z-50 shadow">
-      {/* 
-        Use fixed height instead of py-* 
-        This prevents the “bloated navbar” issue permanently
-      */}
-      <div className="max-w-8xl mx-auto px-6 h-17 flex items-center justify-between">
+      {/* Fixed height, predictable, enterprise-safe */}
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
 
-        {/* LOGO — top-left, anchored, professional */}
+        {/* LOGO — top-left, anchored, world-class */}
         <Link href="/" className="flex items-center">
           <Image
             src="/logo-navbar.png"
             alt="Nharuvi Global"
-            width={290}
+            width={260}
             height={44}
             priority
             className="object-contain translate-y-[1px]"
           />
-          {/* Accessibility + SEO fallback */}
           <span className="sr-only">Nharuvi Global</span>
         </Link>
 
@@ -85,7 +81,7 @@ export default function Navbar() {
           </Link>
         </nav>
 
-        {/* Mobile Menu Icon (future enhancement) */}
+        {/* Mobile Menu Icon */}
         <button className="md:hidden" aria-label="Open menu">
           <Menu size={24} />
         </button>
