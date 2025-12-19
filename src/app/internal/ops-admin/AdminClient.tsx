@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 
 /* ---------------- Types ---------------- */
 
@@ -53,14 +54,38 @@ export default function AdminClient({
   contacts: initialContacts,
   intakes: initialIntakes,
 }: Props) {
-  /* Local state (for live status updates) */
+  /* Local state */
   const [contacts, setContacts] = useState<ContactSubmission[]>([]);
   const [intakes, setIntakes] = useState<IntakeSubmission[]>([]);
+
+  /* Brand settings state */
+  const [navbarLogoUrl, setNavbarLogoUrl] = useState<string>("");
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [logoMessage, setLogoMessage] = useState<string | null>(null);
 
   useEffect(() => {
     setContacts(initialContacts);
     setIntakes(initialIntakes);
   }, [initialContacts, initialIntakes]);
+
+  /* Fetch current navbar logo */
+  useEffect(() => {
+    async function fetchLogo() {
+      try {
+        const res = await fetch(
+          "/api/public/site-settings?key=navbar_logo_url"
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setNavbarLogoUrl(data.value || "");
+        }
+      } catch {
+        // silent fail — branding should never break admin
+      }
+    }
+    fetchLogo();
+  }, []);
 
   /* Filters */
   const [search, setSearch] = useState("");
@@ -70,7 +95,7 @@ export default function AdminClient({
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
-  /* ---------------- Date helpers ---------------- */
+  /* ---------------- Helpers ---------------- */
 
   const isWithinDate = (createdAt: string) => {
     const ts = new Date(createdAt).getTime();
@@ -92,7 +117,7 @@ export default function AdminClient({
     setToDate(now.toISOString().slice(0, 10));
   };
 
-  /* ---------------- Status Update (Optimistic) ---------------- */
+  /* ---------------- Status Update ---------------- */
 
   const updateStatus = async (
     table: "contact_submissions" | "intake_submissions",
@@ -116,7 +141,37 @@ export default function AdminClient({
     });
   };
 
-  /* ---------------- Filtered Data ---------------- */
+  /* ---------------- Upload Logo ---------------- */
+
+  async function uploadNavbarLogo() {
+    if (!logoFile) return;
+
+    setLogoUploading(true);
+    setLogoMessage(null);
+
+    const formData = new FormData();
+    formData.append("file", logoFile);
+    formData.append("key", "navbar_logo_url");
+
+    const res = await fetch("/api/admin/site-settings", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setLogoMessage(data.error || "Upload failed");
+    } else {
+      setNavbarLogoUrl(data.url);
+      setLogoMessage("Navbar logo updated successfully");
+      setLogoFile(null);
+    }
+
+    setLogoUploading(false);
+  }
+
+  /* ---------------- Derived Data ---------------- */
 
   const filteredContacts = useMemo(() => {
     return contacts
@@ -140,7 +195,7 @@ export default function AdminClient({
           : new Date(a.created_at).getTime() -
             new Date(b.created_at).getTime()
       );
-  }, [contacts, search, statusFilter, sortOrder, isWithinDate]);
+  }, [contacts, search, statusFilter, sortOrder, fromDate, toDate]);
 
   const filteredIntakes = useMemo(() => {
     return intakes
@@ -180,7 +235,15 @@ export default function AdminClient({
           : new Date(a.created_at).getTime() -
             new Date(b.created_at).getTime()
       );
-  }, [intakes, search, statusFilter, serviceFilter, sortOrder, isWithinDate]);
+  }, [
+    intakes,
+    search,
+    statusFilter,
+    serviceFilter,
+    sortOrder,
+    fromDate,
+    toDate,
+  ]);
 
   const services = Array.from(
     new Set(
@@ -340,11 +403,54 @@ export default function AdminClient({
               <p><strong>Revenue:</strong> {i.annual_revenue || "-"}</p>
               <p><strong>Location:</strong> {i.location || "-"}</p>
               <p className="whitespace-pre-wrap">
-                <strong>Comments:</strong> {i.comments || "-"}
-              </p>
+                <strong>Comments:</strong> {i.comments || "-"}</p>
             </div>
           </details>
         ))}
+      </section>
+
+      {/* BRAND SETTINGS */}
+      <section className="mt-20 border-t pt-10">
+        <h2 className="text-2xl font-semibold mb-6">Brand Settings</h2>
+
+        <div className="bg-white border rounded-lg p-6 max-w-xl">
+          <h3 className="font-semibold mb-4">Navbar Logo</h3>
+
+          {navbarLogoUrl ? (
+            <div className="mb-4">
+              <Image
+                src={navbarLogoUrl}
+                alt="Navbar Logo Preview"
+                width={260}
+                height={44}
+                className="object-contain border p-2 bg-gray-50"
+              />
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500 mb-4">
+              No logo uploaded yet.
+            </p>
+          )}
+
+          <input
+            type="file"
+            accept="image/png,image/jpeg"
+            onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
+            className="mb-4 block text-sm"
+          />
+
+          <button
+            onClick={uploadNavbarLogo}
+            disabled={!logoFile || logoUploading}
+            className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
+          >
+            {logoUploading ? "Uploading..." : "Upload & Apply"}
+          </button>
+
+          {logoMessage && (
+            <p className="mt-3 text-sm text-gray-600">{logoMessage}</p>
+          )}
+        </div>
       </section>
     </>
   );

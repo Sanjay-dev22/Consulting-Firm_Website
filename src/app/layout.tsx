@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar"; // ✅ Import navbar
+import Navbar from "@/components/Navbar";
+import { supabase } from "@/lib/supabase";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,20 +16,36 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Nharuvi Global",
-  description: "Smart, reliable, and tech-driven accounting & compliance solutions.",
+  description:
+    "Smart, reliable, and tech-driven accounting & compliance solutions.",
 };
 
-export default function RootLayout({
+/* -------- Fetch navbar logo (server-side) -------- */
+async function getNavbarLogo() {
+  const { data, error } = await supabase
+    .from("site_settings")
+    .select("value")
+    .eq("key", "navbar_logo_url")
+    .single();
+
+  if (error) return "";
+  return data?.value || "";
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const navbarLogoUrl = await getNavbarLogo();
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar /> {/* ✅ Show navbar on all pages */}
+        {/* Dynamic Navbar */}
+        <Navbar logoUrl={navbarLogoUrl} />
         {children}
       </body>
     </html>

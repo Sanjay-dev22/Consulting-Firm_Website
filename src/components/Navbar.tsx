@@ -1,36 +1,46 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { Menu } from 'lucide-react';
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { Menu } from "lucide-react";
 
 const navItems = [
-  { name: 'About Us', href: '/about' },
-  { name: 'Industries', href: '/industries' },
-  { name: 'Insights', href: '/insights' },
-  { name: 'Regions', href: '/regions' },
+  { name: "About Us", href: "/about" },
+  { name: "Industries", href: "/industries" },
+  { name: "Insights", href: "/insights" },
+  { name: "Regions", href: "/regions" },
 ];
 
-export default function Navbar() {
+type NavbarProps = {
+  logoUrl: string;
+};
+
+export default function Navbar({ logoUrl }: NavbarProps) {
   const pathname = usePathname();
 
   return (
     <header className="bg-[#121926] text-white sticky top-0 z-50 shadow">
-      {/* Fixed height, predictable, enterprise-safe */}
-      <div className="max-w-8xl mx-auto px-6 h-17 flex items-center justify-between">
+      {/* Full-width navbar for outward spread */}
+      <div className="w-full px-10 lg:px-16 h-16 flex items-center justify-between">
 
-        {/* LOGO — top-left, anchored, world-class */}
+        {/* LOGO (dynamic) */}
         <Link href="/" className="flex items-center">
-          <Image
-            src="/logo-navbar.png"
-            alt="Nharuvi Global"
-            width={305}
-            height={48}
-            priority
-            className="object-contain translate-y-[1px]"
-          />
-          <span className="sr-only">Nharuvi Global</span>
+          {logoUrl ? (
+            <Image
+              src={logoUrl}
+              alt="Nharuvi Global"
+              width={260}
+              height={44}
+              priority
+              className="object-contain translate-y-[1px]"
+            />
+          ) : (
+            // Fallback (never breaks UI)
+            <span className="text-xl font-bold tracking-wide">
+              Nharuvi Global
+            </span>
+          )}
         </Link>
 
         {/* Desktop Navigation */}
@@ -41,8 +51,8 @@ export default function Navbar() {
               href={href}
               className={`hover:text-green-400 transition ${
                 pathname.startsWith(href)
-                  ? 'text-green-400 font-semibold'
-                  : ''
+                  ? "text-green-400 font-semibold"
+                  : ""
               }`}
             >
               {name}
@@ -52,9 +62,9 @@ export default function Navbar() {
           <Link
             href="/services"
             className={`hover:text-green-400 transition ${
-              pathname.startsWith('/services')
-                ? 'text-green-400 font-semibold'
-                : ''
+              pathname.startsWith("/services")
+                ? "text-green-400 font-semibold"
+                : ""
             }`}
           >
             Services
@@ -64,9 +74,9 @@ export default function Navbar() {
           <Link
             href="/contact"
             className={`ml-4 px-4 py-2 rounded-full border border-green-400 text-green-400 hover:bg-green-400 hover:text-black font-semibold transition ${
-              pathname === '/contact'
-                ? 'bg-green-400 text-black'
-                : ''
+              pathname === "/contact"
+                ? "bg-green-400 text-black"
+                : ""
             }`}
           >
             Contact
