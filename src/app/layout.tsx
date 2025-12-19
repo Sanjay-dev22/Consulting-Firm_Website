@@ -4,6 +4,9 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { supabase } from "@/lib/supabase";
 
+/* 🔴 IMPORTANT: Disable caching in production */
+export const dynamic = "force-dynamic";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -44,7 +47,6 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* Dynamic Navbar */}
         <Navbar logoUrl={navbarLogoUrl} />
         {children}
       </body>
