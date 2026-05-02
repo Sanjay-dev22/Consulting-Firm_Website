@@ -95,4 +95,4 @@ src/app/
 
 ## 📄 License
 
-Client Project (Private Usage)
+This project is for portfolio purposes only. All rights reserved.
